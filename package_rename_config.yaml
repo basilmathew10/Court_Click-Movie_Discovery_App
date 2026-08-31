@@ -1,0 +1,9 @@
+package_rename_config:
+  android:
+    app_name: Movie Discovery App
+    package_name: com.court_click.movie_disc_app
+
+  ios:
+    app_name: Movie Discovery App
+    bundle_name: com.courtclick.moviediscapp
+    package_name: com.courtclick.moviediscapp
