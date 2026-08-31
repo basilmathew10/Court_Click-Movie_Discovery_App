@@ -1,5 +1,7 @@
+import 'package:court_click_movie_dicovery_app/application/core/route/app_route.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/colors.dart';
 import 'package:court_click_movie_dicovery_app/application/core/utils/app_assets.dart';
+import 'package:court_click_movie_dicovery_app/presentation/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -104,7 +106,7 @@ class _UserSelectionScreenState extends State<UserSelectionScreen> {
         if (profile.isAddButton) {
           // Action for adding profile
         } else {
-          // Action for selecting profile
+          AppRoute.pushNamedAndRemoveUntil(MainScreen.routeName);
         }
       },
       child: Column(

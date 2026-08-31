@@ -21,6 +21,7 @@ class ColorResources {
   static const grey = Color(0xFF8C8787);
   static const secondaryGrey = Color(0xFFC4C4C4);
   static const cardColor = Color(0xFF424242);
+  static const buttonColor = Color(0xFF0071EB);
   static const navBarColor = Color(0xFF121212);
   static const dividerColor = Color(0xFF424242);
   static const textFieldColor = Color(0xFF424242);

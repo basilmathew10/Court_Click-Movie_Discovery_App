@@ -1,9 +1,9 @@
 import 'package:court_click_movie_dicovery_app/application/core/app_details.dart';
 import 'package:court_click_movie_dicovery_app/application/core/utils/logger.dart';
 import 'package:court_click_movie_dicovery_app/presentation/initial_screen/user_selection_screen.dart';
+import 'package:court_click_movie_dicovery_app/presentation/main_screen.dart';
 import 'package:court_click_movie_dicovery_app/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
 
 class AppRoute {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -15,6 +15,9 @@ class AppRoute {
     switch (settings.name) {
       case UserSelectionScreen.routeName:
         return pushRoute(settings, const UserSelectionScreen());
+
+      case MainScreen.routeName:
+        return pushRoute(settings, const MainScreen());
 
       case SplashScreen.routeName:
       default:

@@ -3,6 +3,7 @@ import 'package:court_click_movie_dicovery_app/application/core/route/app_route.
 import 'package:court_click_movie_dicovery_app/application/core/theme/app_theme.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/theme/theme_cubit.dart';
 import 'package:court_click_movie_dicovery_app/application/core/utils/enums.dart';
+import 'package:court_click_movie_dicovery_app/application/home/home_bloc.dart';
 import 'package:court_click_movie_dicovery_app/domain/core/di/injection.dart';
 import 'package:court_click_movie_dicovery_app/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         return MultiBlocProvider(
           providers: [
             BlocProvider(create: (context) => ThemeCubit()),
+            BlocProvider(create: (context) => HomeBloc()),
           ],
           child: BlocBuilder<ThemeCubit, ThemeState>(
             builder: (context, state) {
