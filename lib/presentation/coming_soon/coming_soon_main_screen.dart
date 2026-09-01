@@ -1,3 +1,4 @@
+import 'package:court_click_movie_dicovery_app/application/core/app_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -29,7 +30,7 @@ class _ComingSoonMainScreenState extends State<ComingSoonMainScreen> {
   void _fetchUpcomingMovies() {
     final bloc = context.read<HomeBloc>();
     bloc.add(
-      const HomeEvent.getMoviesListing(apiKey: '', type: 'upcoming', page: 1),
+      const HomeEvent.getMoviesListing(apiKey: AppDetails.apiKey, type: 'upcoming', page: 1),
     );
   }
 
@@ -49,7 +50,7 @@ class _ComingSoonMainScreenState extends State<ComingSoonMainScreen> {
           state.upcomingCurrentPage < state.upcomingTotalPages) {
         bloc.add(
           HomeEvent.getMoviesListing(
-            apiKey: '',
+            apiKey: AppDetails.apiKey,
             type: 'upcoming',
             page: state.upcomingCurrentPage + 1,
           ),

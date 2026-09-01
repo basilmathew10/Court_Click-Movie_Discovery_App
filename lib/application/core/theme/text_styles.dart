@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:court_click_movie_dicovery_app/application/core/app_details.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/colors.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/theme/theme_cubit.dart';
 import 'package:court_click_movie_dicovery_app/application/core/utils/enums.dart';
 
-final baseTextStyle = GoogleFonts.poppins();
-final baseHeadingStyle = GoogleFonts.poppins();
+const String sfProFontFamily = 'SF Pro Display';
+const List<String> sfProFontFamilyFallback = [
+  '.SF Pro Display',
+  'SF Pro Text',
+  'SF Pro',
+  'Roboto',
+  'sans-serif',
+];
+
+const baseTextStyle = TextStyle(
+  fontFamily: sfProFontFamily,
+  fontFamilyFallback: sfProFontFamilyFallback,
+);
+const baseHeadingStyle = TextStyle(
+  fontFamily: sfProFontFamily,
+  fontFamilyFallback: sfProFontFamilyFallback,
+);
 
 final _scaleWidth = AppDetails.screenSize.width / AppDetails.designWidth;
 
@@ -40,7 +54,14 @@ extension TextStyleX on TextStyle {
 
   TextStyle get underline => copyWith(decoration: TextDecoration.underline);
 
-  TextStyle get poppins => GoogleFonts.poppins(textStyle: this);
+  TextStyle get poppins => copyWith(
+    fontFamily: sfProFontFamily,
+    fontFamilyFallback: sfProFontFamilyFallback,
+  );
+  TextStyle get sfPro => copyWith(
+    fontFamily: sfProFontFamily,
+    fontFamilyFallback: sfProFontFamilyFallback,
+  );
 
   TextStyle get white => copyWith(color: ColorResources.white);
   TextStyle get red => copyWith(color: ColorResources.red);
@@ -53,9 +74,11 @@ extension TextStyleX on TextStyle {
 class ThemeTextStyles {
   static TextStyle getPrimaryTextStyle(BuildContext context) {
     final themeMode = context.watch<ThemeCubit>().state.themeMode;
-    final baseStyle = GoogleFonts.poppins(
-      textStyle: Theme.of(context).textTheme.titleSmall,
-    );
+    final baseStyle = (Theme.of(context).textTheme.titleSmall ?? baseTextStyle)
+        .copyWith(
+          fontFamily: sfProFontFamily,
+          fontFamilyFallback: sfProFontFamilyFallback,
+        );
 
     switch (themeMode) {
       case AppThemeMode.light:
@@ -67,9 +90,11 @@ class ThemeTextStyles {
 
   static TextStyle getSecondaryTextStyle(BuildContext context) {
     final themeMode = context.watch<ThemeCubit>().state.themeMode;
-    final baseStyle = GoogleFonts.poppins(
-      textStyle: Theme.of(context).textTheme.titleSmall,
-    );
+    final baseStyle = (Theme.of(context).textTheme.titleSmall ?? baseTextStyle)
+        .copyWith(
+          fontFamily: sfProFontFamily,
+          fontFamilyFallback: sfProFontFamilyFallback,
+        );
 
     switch (themeMode) {
       case AppThemeMode.light:

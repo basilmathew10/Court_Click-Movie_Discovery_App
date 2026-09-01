@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:court_click_movie_dicovery_app/application/core/app_details.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
@@ -259,8 +260,7 @@ class LoggingInterceptor extends InterceptorsWrapper {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    const token =
-        "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzOGI3NTA0MjBkMTUzMjIyMmRmM2ZhMjE0ZTNhYzVmOSIsIm5iZiI6MTc4ODIwOTYzNS43ODU5OTk4LCJzdWIiOiI2YTk1ZTllMzNiOGU2MzNkMTU4ZWEwOWIiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.CxZgs3GKGAk7n1imjLGCM7uwfErNdEhQNnDdr20KwLg";
+    const token = AppDetails.bearerToken;
 
     options.headers.addAll({
       'User-Agent':

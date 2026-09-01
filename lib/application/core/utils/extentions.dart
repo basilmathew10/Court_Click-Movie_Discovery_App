@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/colors.dart';
+import 'package:court_click_movie_dicovery_app/application/core/theme/text_styles.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/theme/theme_cubit.dart';
 import 'package:court_click_movie_dicovery_app/application/core/utils/enums.dart';
 import 'package:intl/intl.dart';
@@ -11,21 +11,26 @@ extension BuildContextX on BuildContext {
   AppThemeMode get theme => read<ThemeCubit>().state.themeMode;
   AppThemeMode get theme1 => read<ThemeCubit>().state.themeMode;
 
+  TextStyle _withSfPro(TextStyle style) => style.copyWith(
+        fontFamily: sfProFontFamily,
+        fontFamilyFallback: sfProFontFamilyFallback,
+      );
+
   TextStyle get body =>
-      GoogleFonts.poppins(textStyle: Theme.of(this).textTheme.bodyMedium!);
+      _withSfPro(Theme.of(this).textTheme.bodyMedium!);
   Size get getSize => MediaQuery.sizeOf(this);
 
   TextStyle get textStyle1 {
     switch (theme1) {
       case AppThemeMode.light:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.bodyMedium!.copyWith(color: ColorResources.textColor),
         );
       case AppThemeMode.dark:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.bodyMedium!.copyWith(color: ColorResources.white),
         );
@@ -35,14 +40,14 @@ extension BuildContextX on BuildContext {
   TextStyle get textStyle2 {
     switch (theme1) {
       case AppThemeMode.light:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.bodySmall!.copyWith(color: ColorResources.primary),
         );
       case AppThemeMode.dark:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.bodySmall!.copyWith(color: ColorResources.primary),
         );
@@ -52,14 +57,14 @@ extension BuildContextX on BuildContext {
   TextStyle get heading {
     switch (theme) {
       case AppThemeMode.light:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.textColor),
         );
       case AppThemeMode.dark:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.white),
         );
@@ -69,14 +74,14 @@ extension BuildContextX on BuildContext {
   TextStyle get hintText {
     switch (theme) {
       case AppThemeMode.light:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.bodySmall!.copyWith(color: ColorResources.grey),
         );
       case AppThemeMode.dark:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.bodySmall!.copyWith(color: ColorResources.grey),
         );
@@ -86,14 +91,14 @@ extension BuildContextX on BuildContext {
   TextStyle get resetText {
     switch (theme) {
       case AppThemeMode.light:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.textColor),
         );
       case AppThemeMode.dark:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.textColor),
         );
@@ -103,14 +108,14 @@ extension BuildContextX on BuildContext {
   TextStyle get whiteText {
     switch (theme) {
       case AppThemeMode.light:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.white),
         );
       case AppThemeMode.dark:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.white),
         );
@@ -120,14 +125,14 @@ extension BuildContextX on BuildContext {
   TextStyle get primaryText {
     switch (theme) {
       case AppThemeMode.light:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.textColor),
         );
       case AppThemeMode.dark:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.textColor),
         );
@@ -137,14 +142,14 @@ extension BuildContextX on BuildContext {
   TextStyle get secondaryText {
     switch (theme) {
       case AppThemeMode.light:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.textColor),
         );
       case AppThemeMode.dark:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.textColor),
         );
@@ -154,14 +159,14 @@ extension BuildContextX on BuildContext {
   TextStyle get redText {
     switch (theme) {
       case AppThemeMode.light:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.red),
         );
       case AppThemeMode.dark:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.red),
         );
@@ -171,14 +176,14 @@ extension BuildContextX on BuildContext {
   TextStyle get policyText {
     switch (theme) {
       case AppThemeMode.light:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.textColor),
         );
       case AppThemeMode.dark:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.textColor),
         );
@@ -188,14 +193,14 @@ extension BuildContextX on BuildContext {
   TextStyle get subTitleText {
     switch (theme) {
       case AppThemeMode.light:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.grey),
         );
       case AppThemeMode.dark:
-        return GoogleFonts.poppins(
-          textStyle: Theme.of(
+        return _withSfPro(
+          Theme.of(
             this,
           ).textTheme.headlineSmall!.copyWith(color: ColorResources.grey),
         );

@@ -1,3 +1,4 @@
+import 'package:court_click_movie_dicovery_app/application/core/app_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/colors.dart';
@@ -27,13 +28,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _fetchHomeData() {
     final bloc = context.read<HomeBloc>();
-    bloc.add(const HomeEvent.getTrendingMovies(apiKey: '', page: 1));
+    bloc.add(const HomeEvent.getTrendingMovies(apiKey: AppDetails.apiKey, page: 1));
     bloc.add(
-      const HomeEvent.getMoviesListing(apiKey: '', type: 'popular', page: 1),
+      const HomeEvent.getMoviesListing(apiKey: AppDetails.apiKey, type: 'popular', page: 1),
     );
     bloc.add(
       const HomeEvent.getMoviesListing(
-        apiKey: '',
+        apiKey: AppDetails.apiKey,
         type: 'top_rated',
         page: 1,
       ),
@@ -147,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onRetry: () {
                       context.read<HomeBloc>().add(
                             const HomeEvent.getMoviesListing(
-                              apiKey: '',
+                              apiKey: AppDetails.apiKey,
                               type: 'popular',
                               page: 1,
                             ),
@@ -167,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onRetry: () {
                       context.read<HomeBloc>().add(
                             const HomeEvent.getTrendingMovies(
-                              apiKey: '',
+                              apiKey: AppDetails.apiKey,
                               page: 1,
                             ),
                           );
@@ -186,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onRetry: () {
                       context.read<HomeBloc>().add(
                             const HomeEvent.getMoviesListing(
-                              apiKey: '',
+                              apiKey: AppDetails.apiKey,
                               type: 'top_rated',
                               page: 1,
                             ),
@@ -206,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onRetry: () {
                       context.read<HomeBloc>().add(
                             const HomeEvent.getMoviesListing(
-                              apiKey: '',
+                              apiKey: AppDetails.apiKey,
                               type: 'top_rated',
                               page: 1,
                             ),
@@ -226,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onRetry: () {
                       context.read<HomeBloc>().add(
                             const HomeEvent.getMoviesListing(
-                              apiKey: '',
+                              apiKey: AppDetails.apiKey,
                               type: 'popular',
                               page: 1,
                             ),
@@ -246,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onRetry: () {
                       context.read<HomeBloc>().add(
                             const HomeEvent.getTrendingMovies(
-                              apiKey: '',
+                              apiKey: AppDetails.apiKey,
                               page: 1,
                             ),
                           );

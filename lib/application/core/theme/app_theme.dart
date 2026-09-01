@@ -15,6 +15,8 @@ class AppTheme {
   }
 
   static ThemeData get _lightTheme => ThemeData(
+    fontFamily: sfProFontFamily,
+    fontFamilyFallback: sfProFontFamilyFallback,
     scaffoldBackgroundColor: ColorResources.scaffoldBackground,
     textTheme: TextTheme(
       bodyMedium: baseTextStyle,
@@ -28,7 +30,10 @@ class AppTheme {
       ),
     ),
   );
+
   static ThemeData get _darkTheme => ThemeData(
+    fontFamily: sfProFontFamily,
+    fontFamilyFallback: sfProFontFamilyFallback,
     scaffoldBackgroundColor: ColorResources.scaffoldBackground,
     textTheme: TextTheme(
       bodyMedium: baseTextStyle,
@@ -42,7 +47,10 @@ class AppTheme {
       ),
     ),
   );
+
   static ThemeData get _premiumTheme => ThemeData(
+    fontFamily: sfProFontFamily,
+    fontFamilyFallback: sfProFontFamilyFallback,
     scaffoldBackgroundColor: ColorResources.scaffoldBackground,
     textTheme: TextTheme(
       bodyMedium: baseTextStyle,
@@ -56,35 +64,4 @@ class AppTheme {
       ),
     ),
   );
-
-  // static PinTheme get defaultPinTheme => PinTheme(
-  //       // width: 70,
-  //       // height: 70,
-  //       margin: const EdgeInsets.all(1),
-  //       textStyle: const TextStyle(
-  //         fontSize: 20,
-  //         color: ColorResources.textColor,
-  //
-  //         fontWeight: FontWeight.w600,
-  //       ),
-  //       decoration: BoxDecoration(
-  //         color: ColorResources.secondary,
-  //         border: Border.all(
-  //           color: ColorResources.secondary,
-  //         ),
-  //         borderRadius: BorderRadius.circular(16),
-
-  //       ),
-  //     );
-
-  // static PinTheme get focusedPinTheme => defaultPinTheme.copyDecorationWith(
-  //       border: Border.all(color: ColorResources.secondary),
-  //       borderRadius: BorderRadius.circular(16),
-  //     );
-
-  // static PinTheme get submittedPinTheme => defaultPinTheme.copyWith(
-  //       decoration: defaultPinTheme.decoration?.copyWith(
-  //         color: ColorResources.secondary,
-  //       ),
-  //     );
 }

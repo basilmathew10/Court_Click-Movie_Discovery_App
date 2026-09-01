@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:court_click_movie_dicovery_app/application/core/app_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +28,13 @@ class _SearchMainScreenState extends State<SearchMainScreen> {
   void initState() {
     super.initState();
     final bloc = context.read<SearchBloc>();
-    bloc.add(const SearchEvent.getSearchMovies(apiKey: '', query: 'a', page: 1));
+    bloc.add(
+      const SearchEvent.getSearchMovies(
+        apiKey: AppDetails.apiKey,
+        query: 'a',
+        page: 1,
+      ),
+    );
 
     _scrollController.addListener(_onScroll);
   }
@@ -51,7 +58,7 @@ class _SearchMainScreenState extends State<SearchMainScreen> {
         final query = state.currentQuery.isEmpty ? 'a' : state.currentQuery;
         bloc.add(
           SearchEvent.getSearchMovies(
-            apiKey: '',
+            apiKey: AppDetails.apiKey,
             query: query,
             page: state.currentPage + 1,
           ),
@@ -65,12 +72,12 @@ class _SearchMainScreenState extends State<SearchMainScreen> {
     _debounceTimer = Timer(const Duration(milliseconds: 350), () {
       final searchQuery = query.trim().isEmpty ? 'a' : query.trim();
       context.read<SearchBloc>().add(
-            SearchEvent.getSearchMovies(
-              apiKey: '',
-              query: searchQuery,
-              page: 1,
-            ),
-          );
+        SearchEvent.getSearchMovies(
+          apiKey: AppDetails.apiKey,
+          query: searchQuery,
+          page: 1,
+        ),
+      );
     });
   }
 
@@ -79,8 +86,9 @@ class _SearchMainScreenState extends State<SearchMainScreen> {
     final path = result.backdropPath ?? result.posterPath;
     String imageUrl = '';
     if (path != null && path.isNotEmpty) {
-      imageUrl =
-          path.startsWith('http') ? path : 'https://image.tmdb.org/t/p/w500$path';
+      imageUrl = path.startsWith('http')
+          ? path
+          : 'https://image.tmdb.org/t/p/w500$path';
     }
     return SearchMovieItem(title: title, imageUrl: imageUrl);
   }
@@ -126,11 +134,11 @@ class _SearchMainScreenState extends State<SearchMainScreen> {
                   builder: (context, state) {
                     final status = state.getSearchMoviesStatus;
                     final isLoading =
-                        status == ApiStatus.loading || status == ApiStatus.initial;
+                        status == ApiStatus.loading ||
+                        status == ApiStatus.initial;
                     final isError = status == ApiStatus.error;
                     final items = state.searchResultList;
-                    final isEmpty =
-                        !isLoading && !isError && items.isEmpty;
+                    final isEmpty = !isLoading && !isError && items.isEmpty;
 
                     if (isError) {
                       return Center(
@@ -168,12 +176,12 @@ class _SearchMainScreenState extends State<SearchMainScreen> {
                                       ? 'a'
                                       : state.currentQuery;
                                   context.read<SearchBloc>().add(
-                                        SearchEvent.getSearchMovies(
-                                          apiKey: '',
-                                          query: q,
-                                          page: 1,
-                                        ),
-                                      );
+                                    SearchEvent.getSearchMovies(
+                                      apiKey: AppDetails.apiKey,
+                                      query: q,
+                                      page: 1,
+                                    ),
+                                  );
                                 },
                                 child: const Text(
                                   'Retry',
@@ -219,9 +227,7 @@ class _SearchMainScreenState extends State<SearchMainScreen> {
                               title: 'Loading movie title...',
                               imageUrl: '',
                             );
-                            return const TopSearchItemTile(
-                              item: mockItem,
-                            );
+                            return const TopSearchItemTile(item: mockItem);
                           }
 
                           if (index >= items.length) {
