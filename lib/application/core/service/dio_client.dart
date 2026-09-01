@@ -21,6 +21,7 @@ class DioClient {
       ..options.baseUrl = Urls.apiVersionUrl
       ..options.connectTimeout = const Duration(milliseconds: 60000)
       ..options.receiveTimeout = const Duration(milliseconds: 60000);
+    dio.interceptors.add(RetryOnConnectionResetInterceptor(dio));
     dio.interceptors.add(
       PrettyDioLogger(
         requestBody: kDebugMode,
@@ -67,8 +68,7 @@ class DioClient {
       return response;
     } on SocketException catch (e) {
       Logger.logError(e);
-      // print("no network - 1");
-      throw CustomException(errMsg: e.toString());
+      throw CustomException(errMsg: "Network connection error. Please retry.");
     } on FormatException catch (_) {
       throw CustomException(errMsg: "Unable to process the data");
     } catch (e) {
@@ -76,13 +76,25 @@ class DioClient {
 
       if (e is DioException && e.message == "No internet connection") {
         Logger.logWarning(e.response);
-        throw CustomException(errMsg: e.message ?? '');
+        throw CustomException(errMsg: e.message ?? 'No internet connection');
       }
 
       if (e is DioException) {
-        final message = e.response?.data['message'];
+        if (e.type == DioExceptionType.connectionError ||
+            e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.error is SocketException) {
+          throw CustomException(errMsg: "Network connection error. Please retry.");
+        }
 
-        throw CustomException(errMsg: '$message'.capitalize);
+        final message = e.response?.data is Map
+            ? (e.response?.data['message'] ?? e.response?.data['status_message'])
+            : null;
+
+        if (message != null && message.toString().isNotEmpty && message != 'null') {
+          throw CustomException(errMsg: '$message'.capitalize);
+        }
       }
 
       throw CustomException(errMsg: "Unknown error occurred");
@@ -109,19 +121,28 @@ class DioClient {
         onReceiveProgress: onReceiveProgress,
       );
       return response;
-    } on SocketException catch (e) {
-      // print("no network - 1");
-      throw CustomException(errMsg: e.toString());
+    } on SocketException catch (_) {
+      throw CustomException(errMsg: "Network connection error. Please retry.");
     } on FormatException catch (_) {
       throw CustomException(errMsg: "Unable to process the data");
     } catch (e) {
       if (e is DioException && e.message == "No internet connection") {
-        throw CustomException(errMsg: e.message ?? '');
+        throw CustomException(errMsg: e.message ?? 'No internet connection');
       }
       if (e is DioException) {
-        final message = e.response?.data['message'];
+        if (e.type == DioExceptionType.connectionError ||
+            e.type == DioExceptionType.connectionTimeout ||
+            e.error is SocketException) {
+          throw CustomException(errMsg: "Network connection error. Please retry.");
+        }
 
-        throw CustomException(errMsg: '$message'.capitalize);
+        final message = e.response?.data is Map
+            ? (e.response?.data['message'] ?? e.response?.data['status_message'])
+            : null;
+
+        if (message != null && message.toString().isNotEmpty && message != 'null') {
+          throw CustomException(errMsg: '$message'.capitalize);
+        }
       }
       rethrow;
     }
@@ -151,12 +172,16 @@ class DioClient {
       throw CustomException(errMsg: "Unable to process the data");
     } catch (e) {
       if (e is DioException && e.message == "No internet connection") {
-        throw CustomException(errMsg: e.message ?? '');
+        throw CustomException(errMsg: e.message ?? 'No internet connection');
       }
       if (e is DioException) {
-        final message = e.response?.data['message'];
+        final message = e.response?.data is Map
+            ? (e.response?.data['message'] ?? e.response?.data['status_message'])
+            : null;
 
-        throw CustomException(errMsg: '$message'.capitalize);
+        if (message != null && message.toString().isNotEmpty && message != 'null') {
+          throw CustomException(errMsg: '$message'.capitalize);
+        }
       }
       rethrow;
     }
@@ -182,15 +207,49 @@ class DioClient {
       throw CustomException(errMsg: "Unable to process the data");
     } catch (e) {
       if (e is DioException && e.message == "No internet connection") {
-        throw CustomException(errMsg: e.message ?? '');
+        throw CustomException(errMsg: e.message ?? 'No internet connection');
       }
       if (e is DioException) {
-        final message = e.response?.data['message'];
+        final message = e.response?.data is Map
+            ? (e.response?.data['message'] ?? e.response?.data['status_message'])
+            : null;
 
-        throw CustomException(errMsg: '$message'.capitalize);
+        if (message != null && message.toString().isNotEmpty && message != 'null') {
+          throw CustomException(errMsg: '$message'.capitalize);
+        }
       }
       throw CustomException(errMsg: e.toString());
     }
+  }
+}
+
+class RetryOnConnectionResetInterceptor extends Interceptor {
+  final Dio dio;
+
+  RetryOnConnectionResetInterceptor(this.dio);
+
+  @override
+  Future<void> onError(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
+    if (err.type == DioExceptionType.connectionError ||
+        err.type == DioExceptionType.connectionTimeout ||
+        err.error is SocketException) {
+      final options = err.requestOptions;
+      final retryCount = (options.extra['retry_count'] as int? ?? 0);
+      if (retryCount < 2) {
+        options.extra['retry_count'] = retryCount + 1;
+        await Future.delayed(const Duration(milliseconds: 350));
+        try {
+          final response = await dio.fetch(options);
+          return handler.resolve(response);
+        } catch (e) {
+          // Pass error along if retry fails
+        }
+      }
+    }
+    return super.onError(err, handler);
   }
 }
 
@@ -200,26 +259,19 @@ class LoggingInterceptor extends InterceptorsWrapper {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    DateTime now = DateTime.now().toUtc();
-    // String? token = box.read(AppConstants.token);
+    const token =
+        "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzOGI3NTA0MjBkMTUzMjIyMmRmM2ZhMjE0ZTNhYzVmOSIsIm5iZiI6MTc4ODIwOTYzNS43ODU5OTk4LCJzdWIiOiI2YTk1ZTllMzNiOGU2MzNkMTU4ZWEwOWIiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.CxZgs3GKGAk7n1imjLGCM7uwfErNdEhQNnDdr20KwLg";
+
     options.headers.addAll({
-      'Timestamp': now.millisecondsSinceEpoch,
+      'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ',
-      'Access-Control-Allow-Origin': '*',
+      'Authorization': 'Bearer $token',
       'Accept': 'application/json',
-      'Device-Type': Platform.isAndroid
-          ? 1
-          : Platform.isIOS
-          ? 2
-          : 0,
-      // 'Device-Token': AppConstants.fcmToken ?? "",
-      // 'Language': di.sl<LanguageBloc>().locale.languageCode,
-      // 'User-Agent': AppConstants.userAgent ?? {}
     });
 
     Logger.logWarning("Headers: ${options.headers.toString()}");
-    Logger.logWarning("Parms: ${options.data.toString()}");
+    Logger.logWarning("Params: ${options.queryParameters.toString()}");
     return super.onRequest(options, handler);
   }
 
@@ -229,31 +281,18 @@ class LoggingInterceptor extends InterceptorsWrapper {
     ResponseInterceptorHandler handler,
   ) async {
     try {
-      if (response.statusCode == 201) {
+      final statusCode = response.statusCode ?? 0;
+      if (statusCode >= 200 && statusCode < 300) {
         return super.onResponse(response, handler);
-      } else if (response.data['status'] == true) {
-        return response.data['status'] == true
-            ? super.onResponse(response, handler)
-            : handler.reject(
-                DioException(
-                  requestOptions: response.requestOptions,
-                  error: response.data,
-                  response: response,
-                  type: DioExceptionType.unknown,
-                ),
-              );
-        //newly added else
       } else {
-        return response.data['status'] == true
-            ? super.onResponse(response, handler)
-            : handler.reject(
-                DioException(
-                  requestOptions: response.requestOptions,
-                  error: response.data,
-                  response: response,
-                  type: DioExceptionType.unknown,
-                ),
-              );
+        return handler.reject(
+          DioException(
+            requestOptions: response.requestOptions,
+            error: response.data,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
     } catch (e) {
       handler.reject(

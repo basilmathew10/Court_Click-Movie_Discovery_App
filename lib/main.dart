@@ -4,7 +4,10 @@ import 'package:court_click_movie_dicovery_app/application/core/theme/app_theme.
 import 'package:court_click_movie_dicovery_app/application/core/theme/theme/theme_cubit.dart';
 import 'package:court_click_movie_dicovery_app/application/core/utils/enums.dart';
 import 'package:court_click_movie_dicovery_app/application/home/home_bloc.dart';
+import 'package:court_click_movie_dicovery_app/application/search/search_bloc.dart';
 import 'package:court_click_movie_dicovery_app/domain/core/di/injection.dart';
+import 'package:court_click_movie_dicovery_app/domain/home/i_home_facade.dart';
+import 'package:court_click_movie_dicovery_app/domain/search/i_search_facade.dart';
 import 'package:court_click_movie_dicovery_app/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +18,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -44,7 +51,8 @@ class MyApp extends StatelessWidget {
         return MultiBlocProvider(
           providers: [
             BlocProvider(create: (context) => ThemeCubit()),
-            BlocProvider(create: (context) => HomeBloc()),
+            BlocProvider(create: (context) => HomeBloc(sl<IHomeFacade>())),
+            BlocProvider(create: (context) => SearchBloc(sl<ISearchFacade>())),
           ],
           child: BlocBuilder<ThemeCubit, ThemeState>(
             builder: (context, state) {
@@ -57,7 +65,9 @@ class MyApp extends StatelessWidget {
                 theme: AppTheme.getTheme(AppThemeMode.dark),
                 builder: (context, child) {
                   return MediaQuery(
-                    data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: TextScaler.noScaling,
+                    ),
                     child: Stack(children: [child!, const DropdownAlert()]),
                   );
                 },

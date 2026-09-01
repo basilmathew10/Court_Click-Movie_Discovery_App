@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/colors.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/diamentions.dart';
@@ -41,10 +42,10 @@ class ComingSoonCardWidget extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           height: 210,
-          child: Image.network(
-            movie.bannerUrl,
+          child: CachedNetworkImage(
+            imageUrl: movie.bannerUrl,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
+            errorWidget: (context, url, error) {
               return Container(
                 color: const Color(0xFF2C2C2C),
                 child: const Center(

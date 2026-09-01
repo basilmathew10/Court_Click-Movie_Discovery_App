@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/colors.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/diamentions.dart';
 
@@ -43,10 +44,10 @@ class MainHeroCard extends StatelessWidget {
               end: Alignment.bottomCenter,
             ),
           ),
-          child: Image.network(
-            imageUrl,
+          child: CachedNetworkImage(
+            imageUrl: imageUrl,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
+            errorWidget: (context, url, error) {
               return Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(

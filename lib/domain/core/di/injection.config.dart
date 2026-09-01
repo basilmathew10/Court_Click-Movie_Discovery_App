@@ -15,7 +15,14 @@ import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 import '../../../application/core/service/dio_client.dart' as _i536;
+import '../../../application/home/home_bloc.dart' as _i485;
+import '../../../application/search/search_bloc.dart' as _i823;
+import '../../../infrastructure/home/i_home_facade_impl.dart' as _i941;
+import '../../../infrastructure/search/i_search_facade_impl.dart' as _i892;
+import '../../home/i_home_facade.dart' as _i490;
+import '../../search/i_search_facade.dart' as _i92;
 import '../base/run_safely.dart' as _i530;
+import '../base/safe_api_caller.dart' as _i930;
 import 'app_injection_module.dart' as _i975;
 import 'local_notification_serveice.dart' as _i793;
 
@@ -42,6 +49,25 @@ Future<_i174.GetIt> init(
   gh.lazySingleton<_i530.RunSafely>(() => _i530.RunSafely());
   gh.lazySingleton<_i361.Dio>(() => appInjectionModule.dio);
   gh.lazySingleton<_i536.DioClient>(() => _i536.DioClient(gh<_i361.Dio>()));
+  gh.lazySingleton<_i930.SafeApiCaller>(
+    () => _i930.SafeApiCaller(runSafely: gh<_i530.RunSafely>()),
+  );
+  gh.lazySingleton<_i92.ISearchFacade>(
+    () => _i892.ISearchFacadeImpl(
+      safeApiCaller: gh<_i930.SafeApiCaller>(),
+      dioClient: gh<_i536.DioClient>(),
+    ),
+  );
+  gh.factory<_i823.SearchBloc>(
+    () => _i823.SearchBloc(gh<_i92.ISearchFacade>()),
+  );
+  gh.lazySingleton<_i490.IHomeFacade>(
+    () => _i941.IHomeFacadeImpl(
+      safeApiCaller: gh<_i930.SafeApiCaller>(),
+      dioClient: gh<_i536.DioClient>(),
+    ),
+  );
+  gh.factory<_i485.HomeBloc>(() => _i485.HomeBloc(gh<_i490.IHomeFacade>()));
   return getIt;
 }
 

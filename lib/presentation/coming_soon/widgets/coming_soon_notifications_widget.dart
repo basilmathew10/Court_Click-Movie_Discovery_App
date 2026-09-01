@@ -1,5 +1,6 @@
 import 'package:court_click_movie_dicovery_app/application/core/theme/diamentions.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/colors.dart';
 
 class NewArrivalItem {
@@ -95,12 +96,12 @@ class ComingSoonNotificationsWidget extends StatelessWidget {
           // Movie Thumbnail
           ClipRRect(
             borderRadius: BorderRadius.circular(2),
-            child: Image.network(
-              item.imageUrl,
+            child: CachedNetworkImage(
+              imageUrl: item.imageUrl,
               width: 130,
               height: 68,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
+              errorWidget: (context, url, error) {
                 return Container(
                   width: 130,
                   height: 68,

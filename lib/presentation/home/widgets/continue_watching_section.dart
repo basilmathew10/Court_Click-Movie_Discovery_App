@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/colors.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/diamentions.dart';
 
@@ -104,10 +105,10 @@ class ContinueWatchingSection extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(4),
                   ),
-                  child: Image.network(
-                    item.imageUrl,
+                  child: CachedNetworkImage(
+                    imageUrl: item.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
+                    errorWidget: (context, url, error) {
                       return Container(
                         color: const Color(0xFF2C2C2C),
                         child: const Icon(

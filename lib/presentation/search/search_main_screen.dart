@@ -1,50 +1,89 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/colors.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/diamentions.dart';
+import 'package:court_click_movie_dicovery_app/application/core/utils/enums.dart';
+import 'package:court_click_movie_dicovery_app/application/search/search_bloc.dart';
+import 'package:court_click_movie_dicovery_app/domain/search/models/search_response.dart';
 import 'package:court_click_movie_dicovery_app/presentation/search/widgets/search_header_widget.dart';
 import 'package:court_click_movie_dicovery_app/presentation/search/widgets/top_search_item_tile.dart';
 
-class SearchMainScreen extends StatelessWidget {
+class SearchMainScreen extends StatefulWidget {
   const SearchMainScreen({super.key});
 
-  static const List<SearchMovieItem> topSearchesList = [
-    SearchMovieItem(
-      title: 'Citation',
-      imageUrl:
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop',
-    ),
-    SearchMovieItem(
-      title: 'Oloture',
-      imageUrl:
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop',
-    ),
-    SearchMovieItem(
-      title: 'The Setup',
-      imageUrl:
-          'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop',
-    ),
-    SearchMovieItem(
-      title: 'Breaking Bad',
-      imageUrl:
-          'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&auto=format&fit=crop',
-    ),
-    SearchMovieItem(
-      title: 'Ozark',
-      imageUrl:
-          'https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=400&auto=format&fit=crop',
-    ),
-    SearchMovieItem(
-      title: 'The Governor',
-      imageUrl:
-          'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=400&auto=format&fit=crop',
-    ),
-    SearchMovieItem(
-      title: 'Your Excellency',
-      imageUrl:
-          'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=400&auto=format&fit=crop',
-    ),
-  ];
+  @override
+  State<SearchMainScreen> createState() => _SearchMainScreenState();
+}
+
+class _SearchMainScreenState extends State<SearchMainScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  Timer? _debounceTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    final bloc = context.read<SearchBloc>();
+    bloc.add(const SearchEvent.getSearchMovies(apiKey: '', query: 'a', page: 1));
+
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    _searchController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 150) {
+      final bloc = context.read<SearchBloc>();
+      final state = bloc.state;
+      if (!state.isLoadingMore &&
+          state.getSearchMoviesStatus == ApiStatus.success &&
+          state.currentPage < state.totalPages) {
+        final query = state.currentQuery.isEmpty ? 'a' : state.currentQuery;
+        bloc.add(
+          SearchEvent.getSearchMovies(
+            apiKey: '',
+            query: query,
+            page: state.currentPage + 1,
+          ),
+        );
+      }
+    }
+  }
+
+  void _onSearchChanged(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 350), () {
+      final searchQuery = query.trim().isEmpty ? 'a' : query.trim();
+      context.read<SearchBloc>().add(
+            SearchEvent.getSearchMovies(
+              apiKey: '',
+              query: searchQuery,
+              page: 1,
+            ),
+          );
+    });
+  }
+
+  SearchMovieItem _mapResultToSearchItem(Result result) {
+    final title = result.title ?? result.originalTitle ?? 'Untitled';
+    final path = result.backdropPath ?? result.posterPath;
+    String imageUrl = '';
+    if (path != null && path.isNotEmpty) {
+      imageUrl =
+          path.startsWith('http') ? path : 'https://image.tmdb.org/t/p/w500$path';
+    }
+    return SearchMovieItem(title: title, imageUrl: imageUrl);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +101,10 @@ class SearchMainScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Top Search Bar Header
-              const SearchHeaderWidget(),
+              SearchHeaderWidget(
+                controller: _searchController,
+                onChanged: _onSearchChanged,
+              ),
 
               // Section Title: Top Searches
               const Padding(
@@ -80,14 +122,128 @@ class SearchMainScreen extends StatelessWidget {
 
               // Top Searches List
               Expanded(
-                child: ListView.separated(
-                  padding: EdgeInsets.zero,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: topSearchesList.length,
-                  separatorBuilder: (context, index) => gap4,
-                  itemBuilder: (context, index) {
-                    final item = topSearchesList[index];
-                    return TopSearchItemTile(item: item, onPlayTap: () {});
+                child: BlocBuilder<SearchBloc, SearchState>(
+                  builder: (context, state) {
+                    final status = state.getSearchMoviesStatus;
+                    final isLoading =
+                        status == ApiStatus.loading || status == ApiStatus.initial;
+                    final isError = status == ApiStatus.error;
+                    final items = state.searchResultList;
+                    final isEmpty =
+                        !isLoading && !isError && items.isEmpty;
+
+                    if (isError) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                color: ColorResources.red,
+                                size: 36,
+                              ),
+                              gap12,
+                              Text(
+                                state.errorMessage.isNotEmpty
+                                    ? state.errorMessage
+                                    : 'Failed to load search results',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: ColorResources.grey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              gap16,
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: ColorResources.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  final q = state.currentQuery.isEmpty
+                                      ? 'a'
+                                      : state.currentQuery;
+                                  context.read<SearchBloc>().add(
+                                        SearchEvent.getSearchMovies(
+                                          apiKey: '',
+                                          query: q,
+                                          page: 1,
+                                        ),
+                                      );
+                                },
+                                child: const Text(
+                                  'Retry',
+                                  style: TextStyle(
+                                    color: ColorResources.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'No movies found',
+                          style: TextStyle(
+                            color: ColorResources.grey,
+                            fontSize: 15,
+                          ),
+                        ),
+                      );
+                    }
+
+                    final itemCount = isLoading
+                        ? 8
+                        : (items.length + (state.isLoadingMore ? 1 : 0));
+
+                    return Skeletonizer(
+                      enabled: isLoading,
+                      child: ListView.separated(
+                        controller: _scrollController,
+                        padding: EdgeInsets.zero,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: itemCount,
+                        separatorBuilder: (context, index) => gap4,
+                        itemBuilder: (context, index) {
+                          if (isLoading) {
+                            const mockItem = SearchMovieItem(
+                              title: 'Loading movie title...',
+                              imageUrl: '',
+                            );
+                            return const TopSearchItemTile(
+                              item: mockItem,
+                            );
+                          }
+
+                          if (index >= items.length) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 20),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: ColorResources.primary,
+                                  strokeWidth: 2.5,
+                                ),
+                              ),
+                            );
+                          }
+
+                          final item = _mapResultToSearchItem(items[index]);
+                          return TopSearchItemTile(
+                            item: item,
+                            onPlayTap: () {},
+                          );
+                        },
+                      ),
+                    );
                   },
                 ),
               ),

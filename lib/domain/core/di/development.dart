@@ -12,7 +12,7 @@ class DevelopmentEnv extends Env {
   /// Parameters:
   /// - [env]: The name of the environment.
   DevelopmentEnv(String env)
-    : super(domainUrl: 'http://192.168.29.8:8080', env: env) {
+    : super(domainUrl: 'https://api.themoviedb.org', env: env) {
     Logger.logInfo('App Started In Development Mode');
   }
 
