@@ -1,5 +1,6 @@
 import 'package:court_click_movie_dicovery_app/application/core/route/app_route.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/colors.dart';
+import 'package:court_click_movie_dicovery_app/application/core/utils/alert_dialog.dart';
 import 'package:court_click_movie_dicovery_app/application/core/utils/app_assets.dart';
 import 'package:court_click_movie_dicovery_app/presentation/main_screen.dart';
 import 'package:flutter/material.dart';
@@ -107,6 +108,11 @@ class _UserSelectionScreenState extends State<UserSelectionScreen> {
           // Action for adding profile
         } else {
           AppRoute.pushNamedAndRemoveUntil(MainScreen.routeName);
+          CustomAlertDialog.showCustomDialog(
+            title: 'Welcome!',
+            subtitle:
+                'You’re all set. Continue with your selected profile to explore the app.',
+          );
         }
       },
       child: Column(

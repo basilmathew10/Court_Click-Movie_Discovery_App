@@ -22,6 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _fetchHomeData();
+  }
+
+  void _fetchHomeData() {
     final bloc = context.read<HomeBloc>();
     bloc.add(const HomeEvent.getTrendingMovies(apiKey: '', page: 1));
     bloc.add(
@@ -88,161 +92,171 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           }
 
-          return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              // Dynamic Sliver App Bar with Hero Image FlexibleSpace
-              SliverAppBar(
-                pinned: true,
-                floating: false,
-                elevation: 0,
-                backgroundColor: ColorResources.black,
-                expandedHeight: heroHeight,
-                automaticallyImplyLeading: false,
-                titleSpacing: 0,
-                title: const TopNavBar(),
-                flexibleSpace: FlexibleSpaceBar(
-                  collapseMode: CollapseMode.parallax,
-                  background: MainHeroCard(
-                    imageUrl: heroImageUrl,
-                    rankingText: heroRankingText,
-                    onPlayPressed: () {},
-                    onMyListPressed: () {},
-                    onInfoPressed: () {},
+          return RefreshIndicator(
+            color: ColorResources.primary,
+            backgroundColor: ColorResources.cardColor,
+            onRefresh: () async {
+              _fetchHomeData();
+              await Future.delayed(const Duration(milliseconds: 600));
+            },
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              slivers: [
+                // Dynamic Sliver App Bar with Hero Image FlexibleSpace
+                SliverAppBar(
+                  pinned: true,
+                  floating: false,
+                  elevation: 0,
+                  backgroundColor: ColorResources.black,
+                  expandedHeight: heroHeight,
+                  automaticallyImplyLeading: false,
+                  titleSpacing: 0,
+                  title: const TopNavBar(),
+                  flexibleSpace: FlexibleSpaceBar(
+                    collapseMode: CollapseMode.parallax,
+                    background: MainHeroCard(
+                      imageUrl: heroImageUrl,
+                      rankingText: heroRankingText,
+                      onPlayPressed: () {},
+                      onMyListPressed: () {},
+                      onInfoPressed: () {},
+                    ),
                   ),
                 ),
-              ),
 
-              const SliverToBoxAdapter(child: gap16),
+                const SliverToBoxAdapter(child: gap16),
 
-              // 1. Previews Section Sliver
-              const SliverToBoxAdapter(child: PreviewsSection()),
+                // 1. Previews Section Sliver
+                const SliverToBoxAdapter(child: PreviewsSection()),
 
-              const SliverToBoxAdapter(child: gap24),
+                const SliverToBoxAdapter(child: gap24),
 
-              // 2. Continue Watching Section
-              const SliverToBoxAdapter(child: ContinueWatchingSection()),
+                // 2. Continue Watching Section
+                const SliverToBoxAdapter(child: ContinueWatchingSection()),
 
-              const SliverToBoxAdapter(child: gap24),
+                const SliverToBoxAdapter(child: gap24),
 
-              // 3. Popular on Netflix
-              SliverToBoxAdapter(
-                child: MovieCardSection(
-                  title: 'Popular on Netflix',
-                  posterUrls: popularPosters,
-                  status: state.popularMoviesStatus,
-                  onRetry: () {
-                    context.read<HomeBloc>().add(
-                          const HomeEvent.getMoviesListing(
-                            apiKey: '',
-                            type: 'popular',
-                            page: 1,
-                          ),
-                        );
-                  },
+                // 3. Popular on Netflix
+                SliverToBoxAdapter(
+                  child: MovieCardSection(
+                    title: 'Popular on Netflix',
+                    posterUrls: popularPosters,
+                    status: state.popularMoviesStatus,
+                    onRetry: () {
+                      context.read<HomeBloc>().add(
+                            const HomeEvent.getMoviesListing(
+                              apiKey: '',
+                              type: 'popular',
+                              page: 1,
+                            ),
+                          );
+                    },
+                  ),
                 ),
-              ),
 
-              const SliverToBoxAdapter(child: gap24),
+                const SliverToBoxAdapter(child: gap24),
 
-              // 4. Trending Now
-              SliverToBoxAdapter(
-                child: MovieCardSection(
-                  title: 'Trending Now',
-                  posterUrls: trendingPosters,
-                  status: state.getTrendingMoviesStatus,
-                  onRetry: () {
-                    context.read<HomeBloc>().add(
-                          const HomeEvent.getTrendingMovies(
-                            apiKey: '',
-                            page: 1,
-                          ),
-                        );
-                  },
+                // 4. Trending Now
+                SliverToBoxAdapter(
+                  child: MovieCardSection(
+                    title: 'Trending Now',
+                    posterUrls: trendingPosters,
+                    status: state.getTrendingMoviesStatus,
+                    onRetry: () {
+                      context.read<HomeBloc>().add(
+                            const HomeEvent.getTrendingMovies(
+                              apiKey: '',
+                              page: 1,
+                            ),
+                          );
+                    },
+                  ),
                 ),
-              ),
 
-              const SliverToBoxAdapter(child: gap24),
+                const SliverToBoxAdapter(child: gap24),
 
-              // 5. Top 10 in Nigeria Today
-              SliverToBoxAdapter(
-                child: MovieCardSection(
-                  title: 'Top 10 in Nigeria Today',
-                  posterUrls: topRatedPosters,
-                  status: state.topRatedMoviesStatus,
-                  onRetry: () {
-                    context.read<HomeBloc>().add(
-                          const HomeEvent.getMoviesListing(
-                            apiKey: '',
-                            type: 'top_rated',
-                            page: 1,
-                          ),
-                        );
-                  },
+                // 5. Top 10 in Nigeria Today
+                SliverToBoxAdapter(
+                  child: MovieCardSection(
+                    title: 'Top 10 in Nigeria Today',
+                    posterUrls: topRatedPosters,
+                    status: state.topRatedMoviesStatus,
+                    onRetry: () {
+                      context.read<HomeBloc>().add(
+                            const HomeEvent.getMoviesListing(
+                              apiKey: '',
+                              type: 'top_rated',
+                              page: 1,
+                            ),
+                          );
+                    },
+                  ),
                 ),
-              ),
 
-              const SliverToBoxAdapter(child: gap24),
+                const SliverToBoxAdapter(child: gap24),
 
-              // 6. My List
-              SliverToBoxAdapter(
-                child: MovieCardSection(
-                  title: 'My List',
-                  posterUrls: topRatedPosters.isNotEmpty ? topRatedPosters.reversed.toList() : popularPosters,
-                  status: state.topRatedMoviesStatus == ApiStatus.success ? ApiStatus.success : state.popularMoviesStatus,
-                  onRetry: () {
-                    context.read<HomeBloc>().add(
-                          const HomeEvent.getMoviesListing(
-                            apiKey: '',
-                            type: 'top_rated',
-                            page: 1,
-                          ),
-                        );
-                  },
+                // 6. My List
+                SliverToBoxAdapter(
+                  child: MovieCardSection(
+                    title: 'My List',
+                    posterUrls: topRatedPosters.isNotEmpty ? topRatedPosters.reversed.toList() : popularPosters,
+                    status: state.topRatedMoviesStatus == ApiStatus.success ? ApiStatus.success : state.popularMoviesStatus,
+                    onRetry: () {
+                      context.read<HomeBloc>().add(
+                            const HomeEvent.getMoviesListing(
+                              apiKey: '',
+                              type: 'top_rated',
+                              page: 1,
+                            ),
+                          );
+                    },
+                  ),
                 ),
-              ),
 
-              const SliverToBoxAdapter(child: gap24),
+                const SliverToBoxAdapter(child: gap24),
 
-              // 7. African Movies
-              SliverToBoxAdapter(
-                child: MovieCardSection(
-                  title: 'African Movies',
-                  posterUrls: popularPosters.isNotEmpty ? popularPosters.reversed.toList() : trendingPosters,
-                  status: state.popularMoviesStatus,
-                  onRetry: () {
-                    context.read<HomeBloc>().add(
-                          const HomeEvent.getMoviesListing(
-                            apiKey: '',
-                            type: 'popular',
-                            page: 1,
-                          ),
-                        );
-                  },
+                // 7. African Movies
+                SliverToBoxAdapter(
+                  child: MovieCardSection(
+                    title: 'African Movies',
+                    posterUrls: popularPosters.isNotEmpty ? popularPosters.reversed.toList() : trendingPosters,
+                    status: state.popularMoviesStatus,
+                    onRetry: () {
+                      context.read<HomeBloc>().add(
+                            const HomeEvent.getMoviesListing(
+                              apiKey: '',
+                              type: 'popular',
+                              page: 1,
+                            ),
+                          );
+                    },
+                  ),
                 ),
-              ),
 
-              const SliverToBoxAdapter(child: gap24),
+                const SliverToBoxAdapter(child: gap24),
 
-              // 8. Nollywood Movies & TV
-              SliverToBoxAdapter(
-                child: MovieCardSection(
-                  title: 'Nollywood Movies & TV',
-                  posterUrls: trendingPosters.isNotEmpty ? trendingPosters.reversed.toList() : topRatedPosters,
-                  status: state.getTrendingMoviesStatus,
-                  onRetry: () {
-                    context.read<HomeBloc>().add(
-                          const HomeEvent.getTrendingMovies(
-                            apiKey: '',
-                            page: 1,
-                          ),
-                        );
-                  },
+                // 8. Nollywood Movies & TV
+                SliverToBoxAdapter(
+                  child: MovieCardSection(
+                    title: 'Nollywood Movies & TV',
+                    posterUrls: trendingPosters.isNotEmpty ? trendingPosters.reversed.toList() : topRatedPosters,
+                    status: state.getTrendingMoviesStatus,
+                    onRetry: () {
+                      context.read<HomeBloc>().add(
+                            const HomeEvent.getTrendingMovies(
+                              apiKey: '',
+                              page: 1,
+                            ),
+                          );
+                    },
+                  ),
                 ),
-              ),
 
-              const SliverToBoxAdapter(child: gap48),
-            ],
+                const SliverToBoxAdapter(child: gap48),
+              ],
+            ),
           );
         },
       ),

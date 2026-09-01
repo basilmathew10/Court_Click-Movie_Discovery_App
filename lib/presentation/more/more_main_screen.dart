@@ -1,3 +1,6 @@
+import 'package:court_click_movie_dicovery_app/application/core/route/app_route.dart';
+import 'package:court_click_movie_dicovery_app/application/core/utils/alert_dialog.dart';
+import 'package:court_click_movie_dicovery_app/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/colors.dart';
@@ -24,7 +27,14 @@ class MoreMainScreen extends StatelessWidget {
               gap24,
 
               // Referral Card: Tell friends about Netflix
-              const ReferralCardWidget(),
+              ReferralCardWidget(
+                onCopyLinkTap: () {
+                  CustomAlertDialog.showCustomDialog(
+                    title: 'Referral Code',
+                    subtitle: 'Link Copied Successfully',
+                  );
+                },
+              ),
               gap12,
 
               // My List Row with SVG Tick Icon
@@ -39,7 +49,12 @@ class MoreMainScreen extends StatelessWidget {
               _buildSimpleMenuItem('App Settings', onTap: () {}),
               _buildSimpleMenuItem('Account', onTap: () {}),
               _buildSimpleMenuItem('Help', onTap: () {}),
-              _buildSimpleMenuItem('Sign Out', onTap: () {}),
+              _buildSimpleMenuItem(
+                'Sign Out',
+                onTap: () {
+                  AppRoute.pushNamedAndRemoveUntil(SplashScreen.routeName);
+                },
+              ),
 
               gap48,
             ],

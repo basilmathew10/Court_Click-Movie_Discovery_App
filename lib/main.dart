@@ -2,6 +2,7 @@ import 'package:court_click_movie_dicovery_app/application/core/app_details.dart
 import 'package:court_click_movie_dicovery_app/application/core/route/app_route.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/app_theme.dart';
 import 'package:court_click_movie_dicovery_app/application/core/theme/theme/theme_cubit.dart';
+import 'package:court_click_movie_dicovery_app/application/core/utils/custom_dropdown_alert.dart';
 import 'package:court_click_movie_dicovery_app/application/core/utils/enums.dart';
 import 'package:court_click_movie_dicovery_app/application/home/home_bloc.dart';
 import 'package:court_click_movie_dicovery_app/application/search/search_bloc.dart';
@@ -12,7 +13,6 @@ import 'package:court_click_movie_dicovery_app/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dropdown_alert/dropdown_alert.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -65,10 +65,12 @@ class MyApp extends StatelessWidget {
                 theme: AppTheme.getTheme(AppThemeMode.dark),
                 builder: (context, child) {
                   return MediaQuery(
-                    data: MediaQuery.of(context).copyWith(
-                      textScaler: TextScaler.noScaling,
+                    data: MediaQuery.of(
+                      context,
+                    ).copyWith(textScaler: TextScaler.noScaling),
+                    child: Stack(
+                      children: [child!, const CustomDropdownAlert()],
                     ),
-                    child: Stack(children: [child!, const DropdownAlert()]),
                   );
                 },
               );

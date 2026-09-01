@@ -22,12 +22,15 @@ class _ComingSoonMainScreenState extends State<ComingSoonMainScreen> {
   @override
   void initState() {
     super.initState();
+    _fetchUpcomingMovies();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _fetchUpcomingMovies() {
     final bloc = context.read<HomeBloc>();
     bloc.add(
       const HomeEvent.getMoviesListing(apiKey: '', type: 'upcoming', page: 1),
     );
-
-    _scrollController.addListener(_onScroll);
   }
 
   @override
@@ -145,15 +148,7 @@ class _ComingSoonMainScreenState extends State<ComingSoonMainScreen> {
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
-                      onPressed: () {
-                        context.read<HomeBloc>().add(
-                          const HomeEvent.getMoviesListing(
-                            apiKey: '',
-                            type: 'upcoming',
-                            page: 1,
-                          ),
-                        );
-                      },
+                      onPressed: _fetchUpcomingMovies,
                       child: const Text(
                         'Retry',
                         style: TextStyle(
@@ -185,47 +180,57 @@ class _ComingSoonMainScreenState extends State<ComingSoonMainScreen> {
               ? mockFeed
               : results.map((r) => _mapResultToComingSoonModel(r)).toList();
 
-          return Skeletonizer(
-            enabled: isLoading,
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  // Top Notifications & New Arrivals Section
-                  ComingSoonNotificationsWidget(items: arrivalItems),
-                  gap24,
+          return RefreshIndicator(
+            color: ColorResources.primary,
+            backgroundColor: ColorResources.cardColor,
+            onRefresh: () async {
+              _fetchUpcomingMovies();
+              await Future.delayed(const Duration(milliseconds: 600));
+            },
+            child: Skeletonizer(
+              enabled: isLoading,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                child: Column(
+                  children: [
+                    // Top Notifications & New Arrivals Section
+                    ComingSoonNotificationsWidget(items: arrivalItems),
+                    gap24,
 
-                  // Upcoming Show Feed List
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.zero,
-                    itemCount: feedList.length,
-                    separatorBuilder: (context, index) => gap30,
-                    itemBuilder: (context, index) {
-                      final movie = feedList[index];
-                      return ComingSoonCardWidget(
-                        movie: movie,
-                        onRemindMeTap: () {},
-                        onShareTap: () {},
-                      );
-                    },
-                  ),
+                    // Upcoming Show Feed List
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.zero,
+                      itemCount: feedList.length,
+                      separatorBuilder: (context, index) => gap30,
+                      itemBuilder: (context, index) {
+                        final movie = feedList[index];
+                        return ComingSoonCardWidget(
+                          movie: movie,
+                          onRemindMeTap: () {},
+                          onShareTap: () {},
+                        );
+                      },
+                    ),
 
-                  // Bottom Loading Indicator for Infinite Scroll
-                  if (state.isLoadingMoreUpcoming)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24),
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: ColorResources.primary,
-                          strokeWidth: 2.5,
+                    // Bottom Loading Indicator for Infinite Scroll
+                    if (state.isLoadingMoreUpcoming)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 24),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: ColorResources.primary,
+                            strokeWidth: 2.5,
+                          ),
                         ),
                       ),
-                    ),
-                  gap48,
-                ],
+                    gap48,
+                  ],
+                ),
               ),
             ),
           );
