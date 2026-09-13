@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "753534868301",
+    "project_id": "court-click-6d9ef",
+    "storage_bucket": "court-click-6d9ef.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753534868301:android:9b3b8aed75b3bbc06df504",
+        "android_client_info": {
+          "package_name": "com.court_click.movie_disc_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAijXNtYTWPIeoSTx7qRq3sxEDMSYQMwS0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
